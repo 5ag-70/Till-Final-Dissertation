@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>ADVANCED TILL POS</title>
+    <!-- Favicon-->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
+    <link href="//cdn.datatables.net/plug-ins/1.10.21/features/searchHighlight/dataTables.searchHighlight.css" rel="stylesheet" type="text/css">
+	
+     {% load static %}  
+    <!-- Bootstrap Core Css -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}"/> 
+	
+    <!-- Custom Css -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"/> 
+</head>
+
+<body class="theme-red">
+    <section class="content-full">
+        <div class="container-fluid">
+            <div class="block-header">
+                <h2>DASHBOARD</h2>
+            </div>
+
+            <!-- Widgets -->
+            <div class="row clearfix">
+				<div onclick="getCategories();" class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div id="category-widget" class="info-box-4 hover-zoom-effect">
+                        <div class="icon">
+                            <i class="material-icons col-amber">storage</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">CATEGORY</div>
+                            <div class="number count-to">{{category_count}}</div>
+                        </div>
+                    </div>
+                </div>
+				<div onclick="getProducts('out_of_stock');" class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div id="out-of-stock-widget" class="info-box-4 hover-zoom-effect">
+                        <div class="icon">
+                            <i class="material-icons col-yellow">report_problem</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">OUT OF STOCK</div>
+                            <div class="number count-to">{{out_of_stock}}</div>
+                        </div>
+                    </div>
+                </div>
+				<div onclick="getRemovedBatches();" class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div id="removed-batches-widget" class="info-box-4 hover-zoom-effect">
+                        <div class="icon">
+                            <i class="material-icons col-green">apps</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">REMOVED BATCHES</div>
+                            <div class="number count-to">{{removed_batches_count}}</div>
+                        </div>
+                    </div>
+                </div>
+				<div onclick="getProducts('all');" class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div id="product-widget" class="info-box-4 hover-zoom-effect">
+                        <div class="icon">
+                            <i class="material-icons col-amber">widgets</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">PRODUCTS</div>
+                            <div class="number count-to">{{product_count}}</div>
+                        </div>
+                    </div>
+                </div>
+				<div onclick="getProducts('expired');" class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div id="batch-expired-widget" class="info-box-4 hover-zoom-effect">
+                        <div class="icon">
+                            <i class="material-icons col-red">backspace</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">EXPIRED</div>
+                            <div class="number">{{expired_count}}</div>
+                        </div>
+                    </div>
+                </div>
+				<div onclick="getProducts('about_to_expire');" class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div id="batch-soon-expired-widget" class="info-box-4 hover-zoom-effect">
+                        <div class="icon">
+                            <i class="material-icons col-orange">error</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">ABOUT TO EXPIRE</div>
+                            <div class="number count-to">{{about_to_expire_count}}</div>
+                        </div>
+                    </div>
+                </div>
+            <div id="my-data" class="row clearfix">
+                <div class="col-xs-7">
+                    <div class="card">
+                        <div class="header">
+                            <h2>PRODUCTS
+								<Button onclick="location='/product-form/create/0'" type="button" class="btn btn-primary pull-right">ADD PRODUCT</Button>
+							</h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="product" class="table table-hover dashboard-task-infos display">
+                                    <thead>
+                                        <tr>
+                                            <th>Edit</th>
+                                            <th>Favourite</th>
+                                            <th>Item name</th>
+                                            <th>CATEGORY</th>
+                                            <th>Total Product Quantity</th>
+                                            <th>Reorder</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Task Info -->
+                <div class="col-xs-5">
+                    <div class="card">
+                        <div class="header">
+                            <h2>BATCHES</h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="batch" class="table table-hover dashboard-task-infos">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Batch number</th>
+                                            <th>Barcode</th>
+                                            <th>Batch Quantity</th>
+                                            <th>Expiry date</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- #END# Task Info -->
+            </div>
+        </div>
+    </section>
+
+     {% load static %}  
+    <!-- Jquery Core Js -->
+    <script src="{%static 'plugins/jquery/jquery.min.js' %}"></script>
+
+    <!-- Bootstrap Core Js -->
+    <script src="{%static 'plugins/bootstrap/js/bootstrap.js' %}"></script>
+
+    <!-- Select Plugin Js -->
+    <script src="{%static 'plugins/bootstrap-select/js/bootstrap-select.js' %}"></script>
+
+    <!-- Slimscroll Plugin Js -->
+    <script src="{%static 'plugins/jquery-slimscroll/jquery.slimscroll.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}"/> 
+    <script src="{% static 'js/datatables.min.js' %}"></script> 
+    <script src="{% static 'js/jquery.highlight.js' %}"></script> 
+</body>
+
+<script>
+if(localStorage.getItem("clicked") == "category")
+	getCategories();
+else
+	getProducts();
+$(document).ready(function() {
+    $('.info-box-4').click(function(){
+         $('.info-box-4-active').removeClass('info-box-4-active')
+         $(this).addClass("info-box-4-active");
+    });
+});
+    function getBatches(product_id) {
+      var url = "/load/batches";  // get the url of the `load_batches`
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'product': product_id       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#batch").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    };
+    function getProducts(filter) {
+      var url = "/load/products";  // get the url of the `load_cities` view
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'filter': filter       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#my-data").html(data);  // replace the contents of the city input with the data that came from the server
+		  localStorage.setItem("clicked", "product");
+         $('.info-box-4-active').removeClass('info-box-4-active')
+		if (filter == 'out_of_stock')
+			$('#out-of-stock-widget').addClass("info-box-4-active");
+		else if (filter == 'expired')
+			$('#batch-expired-widget').addClass("info-box-4-active");
+		else if (filter == 'about_to_expire')
+			$('#batch-soon-expired-widget').addClass("info-box-4-active");
+		else
+			$('#product-widget').addClass("info-box-4-active");
+        }
+      });
+
+    };
+    function getCategories() {
+      var url = "/load/categories";  // get the url of the `load_cities` view
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {},
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#my-data").html(data);  // replace the contents of the city input with the data that came from the server
+		localStorage.setItem("clicked", "category");
+         $('.info-box-4-active').removeClass('info-box-4-active')
+         $('#category-widget').addClass("info-box-4-active");
+        }
+      });
+
+    };
+    function getRemovedBatches() {
+      var url = "/load/removed-batches";  // get the url of the `load_cities` view
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {},
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#my-data").html(data);  // replace the contents of the city input with the data that came from the server
+         $('.info-box-4-active').removeClass('info-box-4-active')
+         $('#removed-batches-widget').addClass("info-box-4-active");
+        }
+      });
+
+    };
+    function getSubCategories(category_id) {
+      var url = "/load/sub-categories";  // get the url of the `load_cities` view
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'category': category_id       // add the country id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_cities` view function
+          $("#sub-category").html(data);  // replace the contents of the city input with the data that came from the server
+        }
+      });
+
+    };
+</script>
+</html>

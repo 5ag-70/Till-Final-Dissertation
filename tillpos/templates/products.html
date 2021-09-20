@@ -1,0 +1,126 @@
+
+            <div id="my-data" class="row clearfix">
+                <div class="col-xs-7">
+                    <div class="card">
+                        <div class="header">
+                            <h2>PRODUCTS
+								<Button onclick="location='/product-form/create/0'" type="button" class="btn btn-primary pull-right">ADD PRODUCT</Button>
+								<Button style="margin-right:50px;" onclick="scan()" type="button" class="btn btn-primary pull-right">SCAN PRODUCT</Button>
+							</h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="product">
+                                    <thead>
+                                        <tr>
+                                            <th>Edit</th>
+                                            <th>Fav</th>
+                                            <th>Item name</th>
+                                            <th>CATEGORY</th>
+                                            <th>Total Product Quantity</th>
+                                            <th>Reorder</th>
+                                            <th>Status</th>
+                                            <th style="display:none;">bb</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+									{% for product in products %}  
+										<tr onclick="getBatches('{{product.id}}');">  
+											<td><a href="/product-form/edit/{{product.id}}"><i class="material-icons col-blue prefix">mode_edit</i></a></td>
+										{% if product.favorite %}
+											<td><a href="/product-form/favorite/{{product.id}}"><i class="material-icons col-blue prefix">favorite</i></a></td>
+										{% else %}
+											<td><a href="/product-form/favorite/{{product.id}}"><i class="material-icons col-blue prefix">favorite_border</i></a></td>
+										{% endif %}
+											<td>{{ product.name_of_product }}</td>  
+											<td>{{ product.category }}</td> 
+										{% if product.product_quantity < product.minimum_quantity %}
+											<td style="color:blue;">{{ product.product_quantity }}</td> 
+										{% else %}
+											<td>{{ product.product_quantity }}</td> 
+										{% endif %}
+											<td>{{ product.reorder }}</td>  
+											<td>{{ product.status }}</td>
+											<td style="display:none;">{{ product.batch_barcodes }}</td>
+										</tr>  
+									{% endfor %} 
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Task Info -->
+                <div class="col-xs-5">
+                    <div class="card">
+                        <div class="header">
+                            <h2>BATCHES</h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="batch" class="table table-hover dashboard-task-infos">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Batch number</th>
+                                            <th>Barcode</th>
+                                            <th>Batch Quantity</th>
+                                            <th>Expiry date</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- #END# Task Info -->
+            </div>
+<script>
+var table;
+$(document).ready( function () {
+    table = $('#product').DataTable({"pageLength": 50});
+    $('#product tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+	
+    table.on( 'draw', function () {
+        var body = $( table.table().body() );
+ 
+        body.unhighlight();
+        body.highlight( table.search() );  
+    } );
+	
+});
+function scan(){
+      var url = "/scan";  // get the url of the `load_cities` view
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {      // add the country id to the GET parameters
+        },
+        success: function (response_data) {   // `data` is the return of the `load_cities` view function
+		if(response_data.batch_found){
+			window.location.href="/product-form/edit/"+response_data.product_id;
+		}
+		else if(response_data.product_found){
+			localStorage.setItem("barcode", response_data.barcode);
+			localStorage.setItem("batch_number", response_data.batch_number);
+			window.location.href="/product-form/edit/"+response_data.product_id;
+		}
+		else{
+			var r = confirm("Product of barcode: " + response_data.barcode + " not found" +"\nwould you like to add new product?");
+			if (r == true) {
+				window.location.href="/product-form/create/0";
+			}
+		}
+		}
+      });
+
+    };
+</script>

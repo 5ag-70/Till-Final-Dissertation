@@ -1,0 +1,65 @@
+
+            <div id="my-data" class="row clearfix">
+                <div class="col-xs-7">
+                    <div class="card">
+                        <div class="header">
+                            <h2>REMOVED BATCHES</h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="batch_removed">
+                                    <thead>
+                                        <tr>
+                                            <th>Restore</th>
+                                            <th>Item name</th>
+                                            <th>Barcode</th>
+                                            <th>Batch quantity</th>
+                                            <th>Batch number</th>
+                                            <th>Expiry date</th>
+                                            <th>Removed date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+									{% for batch_removed in removed_batches %}  
+										<tr>  
+											<td><a href="/delete/removed-batch/{{batch_removed.id}}"><i class="material-icons col-green prefix">restore</i></a></td>
+											<td>{{ batch_removed.name_of_product }}</td>  
+											<td>{{ batch_removed.barcode }}</td>  
+											<td>{{ batch_removed.batch_number }}</td> 
+											<td>{{ batch_removed.batch_quantity }}</td> 
+											<td>{{ batch_removed.expiry_date }}</td> 
+											<td>{{ batch_removed.removed_date }}</td> 
+										</tr>  
+									{% endfor %} 
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- #END# Task Info -->
+            </div>
+<script>
+$(document).ready( function () {
+    var table = $('#batch_removed').DataTable({"pageLength": 50});
+	 
+    $('#batch_removed tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+	
+    table.on( 'draw', function () {
+        var body = $( table.table().body() );
+ 
+        body.unhighlight();
+        body.highlight( table.search() );  
+    } );
+	
+});
+</script>

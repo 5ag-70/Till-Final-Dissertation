@@ -1,0 +1,38 @@
+<thead>
+	<tr>
+		<th>#</th>
+		<th>Batch number</th>
+		<th>Barcode</th>
+		<th>Quantity</th>
+		<th>Expiry date</th>
+	</tr>
+</thead>
+<tbody>
+{% for batch in batches %}  
+	{% if batch.expired %}
+		<tr style="color:red;">  
+			<td>{{ forloop.counter }}</td>  
+			<td>{{ batch.batch_number}}</td>  
+			<td>{{ batch.barcode}}</td>  
+			<td>{{ batch.batch_quantity }}</td> 
+			<td>{{ batch.expiry_date }}</td>  
+		</tr>
+	{% elif batch.about_to_expire %}
+		<tr style="color:orange;">  
+			<td>{{ forloop.counter }}</td>  
+			<td>{{ batch.batch_number}}</td>  
+			<td>{{ batch.barcode}}</td>  
+			<td>{{ batch.batch_quantity }}</td> 
+			<td>{{ batch.expiry_date }}</td>  
+		</tr> 
+	{% else %}
+		<tr>  
+			<td>{{ forloop.counter }}</td>  
+			<td>{{ batch.batch_number}}</td>  
+			<td>{{ batch.barcode}}</td>  
+			<td>{{ batch.batch_quantity }}</td> 
+			<td>{{ batch.expiry_date }}</td>  
+		</tr> 
+	{% endif %}
+{% endfor %} 
+</tbody>
