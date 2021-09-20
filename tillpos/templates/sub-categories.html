@@ -1,0 +1,26 @@
+<thead>
+	<tr>
+		<th>Edit</th>
+		<th>Delete</th>
+		<th>Category</th>
+		<th>Sub Category</th>
+	</tr>
+</thead>
+<tbody>
+{% for sub_category in sub_categories %}  
+	<tr>
+		<td>
+			<a href="/sub-category-form/edit/{{sub_category.id}}">
+				<i class="material-icons col-blue prefix">edit</i>
+			</a>
+		</td> 
+		<td>
+			<a href="/delete/sub-category/{{sub_category.id}}">
+				<i class="material-icons col-blue prefix">delete</i>
+			</a>
+		</td>  
+		<td>{{ sub_category.category }}</td>  
+		<td>{{ sub_category.sub_category}}</td>  
+	</tr>  
+{% endfor %} 
+</tbody>
